@@ -3,6 +3,8 @@ package setting
 import (
 	"github.com/go-ini/ini"
 	"log"
+	"os"
+	"runtime"
 	"time"
 )
 
@@ -18,9 +20,16 @@ var (
 
 func init() {
 	var err error
-	Cfg, err = ini.Load("src/caspar/gin-blog/conf/app.ini")
+	osType := runtime.GOOS
+	dprefix := ""
+	if osType == "windows" {
+		dprefix = "/src/caspar/gin-blog"
+	}
+	dir, _ := os.Getwd()
+	//Cfg, err = ini.Load(dir+"/src/caspar/gin-blog/conf/app.ini")
+	Cfg, err = ini.Load(dir+dprefix+"/conf/app.ini")
 	if err != nil {
-		log.Fatalf("Fail to parse 'conf/app.ini':%v", err)
+		log.Fatalf("Fail to parse 'conf/app.ini':%v, #######%s", err, dir)
 	}
 	LoadBase()
 	LoadServer()

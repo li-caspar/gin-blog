@@ -3,6 +3,7 @@ package v1
 import (
 	"caspar/gin-blog/models"
 	"caspar/gin-blog/pkg/e"
+	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/pkg/setting"
 	"caspar/gin-blog/pkg/util"
 	"fmt"
@@ -61,7 +62,9 @@ func AddTags(c *gin.Context) {
 			code = e.ERROR_EXIST_TAG
 		}
 	} else {
-		fmt.Println(valid.Errors)
+		for _, err := range valid.Errors {
+			logging.Info(fmt.Sprintf("err.key:%s, err.message:%s", err.Key, err.Message))
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
@@ -104,7 +107,9 @@ func EditTag(c *gin.Context) {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
 	}else{
-		fmt.Println(valid.Errors)
+		for _, err := range valid.Errors {
+			logging.Info(fmt.Sprintf("err.key:%s, err.message:%s", err.Key, err.Message))
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,

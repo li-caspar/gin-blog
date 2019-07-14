@@ -1,10 +1,5 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"time"
-)
-
 type Article struct {
 	Model
 	TagID      int    `json:"tag_id" gom:"index"`
@@ -64,7 +59,7 @@ func DeleteArticle(id int) bool {
 	return true
 }
 
-func (article *Article) BeforeCreate(scope *gorm.Scope) error {
+/*func (article *Article) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
 	return nil
 }
@@ -72,4 +67,4 @@ func (article *Article) BeforeCreate(scope *gorm.Scope) error {
 func (article *Article) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 	return nil
-}
+}*/

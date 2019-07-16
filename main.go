@@ -1,6 +1,8 @@
 package main
 
 import (
+	"caspar/gin-blog/models"
+	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/pkg/setting"
 	"caspar/gin-blog/routers"
 	"context"
@@ -14,13 +16,16 @@ import (
 
 func main() {
 	//gin.SetMode(gin.ReleaseMode)
+	setting.Setup()
+	models.Setup()
+	logging.Setup()
 	router := routers.InitRouter()
 
 	s := &http.Server{
-		Addr:           setting.HTTPPort,
+		Addr:           setting.ServerSetting.HttpPort,
 		Handler:        router,
-		ReadTimeout:    setting.ReadTimeout,
-		WriteTimeout:   setting.WriteTimeout,
+		ReadTimeout:    setting.ServerSetting.ReadTimeout,
+		WriteTimeout:   setting.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 	go func(){

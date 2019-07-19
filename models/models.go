@@ -33,8 +33,8 @@ func Setup() {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return setting.DatabaseSetting.TablePrefix + defaultTableName
 	}
-    db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-    db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
+	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
+	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
@@ -62,7 +62,7 @@ func updateTimeStampForCreateCallback(scope *gorm.Scope) {
 }
 
 func updateTimeStampForUpdateCallback(scope *gorm.Scope) {
-    if _, ok := scope.Get("gorm:update_column"); !ok {
-    	scope.SetColumn("ModifiedOn", time.Now().Unix())
+	if _, ok := scope.Get("gorm:update_column"); !ok {
+		scope.SetColumn("ModifiedOn", time.Now().Unix())
 	}
 }

@@ -3,7 +3,7 @@ package models
 type Tag struct {
 	Model
 	Name       string `json:"name"`
-	CreatedBy   string `json:"created_by"`
+	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
 	State      int    `json:"state"`
 }
@@ -17,7 +17,6 @@ func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 	return nil
 }*/
-
 
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
@@ -39,12 +38,12 @@ func ExitTagByName(name string) bool {
 }
 
 func AddTag(name string, state int, createdBy string) bool {
-    db.Create(&Tag{
-    	Name:name,
-    	State:state,
-    	CreatedBy:createdBy,
+	db.Create(&Tag{
+		Name:      name,
+		State:     state,
+		CreatedBy: createdBy,
 	})
-    return true
+	return true
 }
 
 func ExistTagByID(id int) bool {
@@ -65,5 +64,3 @@ func EditTag(id int, data interface{}) bool {
 	db.Model(&Tag{}).Where("id=?", id).Update(data)
 	return true
 }
-
-

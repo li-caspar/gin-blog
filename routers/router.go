@@ -3,9 +3,11 @@ package routers
 import (
 	"caspar/gin-blog/middleware/jwt"
 	"caspar/gin-blog/pkg/setting"
+	"caspar/gin-blog/pkg/upload"
 	"caspar/gin-blog/routers/api"
 	v1 "caspar/gin-blog/routers/api/v1"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 /*func Default() *Engine {
@@ -24,6 +26,7 @@ func InitRouter() *gin.Engine {
 			"message": "test",
 		})
 	})*/
+	r.StaticFS("upload/images", http.Dir(upload.GetImageFullPath()))
 	r.GET("auth", api.GetAuth)
 	r.POST("upload", api.UploadImage)
 

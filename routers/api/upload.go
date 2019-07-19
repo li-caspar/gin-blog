@@ -32,23 +32,23 @@ func UploadImage(c *gin.Context) {
 
 		if !upload.CheckImageExt(imageName) || !upload.CheckImageSize(file) {
 			code = e.ERROR_UPLOAD_CHECK_IMAGE_FORMAT
-		}else{
+		} else {
 			err := upload.CheckImage(fullPath)
 			if err != nil {
 				logging.Warn(err)
 				code = e.ERROR_UPLOAD_CHECK_IMAGE_FAIL
-			}else if err := c.SaveUploadedFile(image, src); err != nil {
+			} else if err := c.SaveUploadedFile(image, src); err != nil {
 				logging.Warn(err)
 				code = e.ERROR_UPLOAD_SAVE_IMAGE_FAIL
-			}else{
-				data["image_url"] = upload.GetImageFullUrl(imageName)  //http://127.0.0.1:8080 + upload/images/ + imageName
+			} else {
+				data["image_url"] = upload.GetImageFullUrl(imageName) //http://127.0.0.1:8080 + upload/images/ + imageName
 				data["image_save_url"] = savePath + imageName
 			}
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"code":code,
-			"msg":e.GetMsg(code),
-			"data":data,
+			"code": code,
+			"msg":  e.GetMsg(code),
+			"data": data,
 		})
 
 	}

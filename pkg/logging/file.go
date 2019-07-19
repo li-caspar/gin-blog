@@ -29,7 +29,7 @@ func getLogFileName() string {
 	return fmt.Sprintf("%s%s", prefixPath, suffixPath)
 }*/
 
-func openLogFile(filepath string, filename string) (*os.File, error){
+func openLogFile(filepath string, filename string) (*os.File, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return nil, fmt.Errorf("os.Getwd err:%v", err)
@@ -51,5 +51,3 @@ func openLogFile(filepath string, filename string) (*os.File, error){
 	}
 	return f, nil
 }
-
-

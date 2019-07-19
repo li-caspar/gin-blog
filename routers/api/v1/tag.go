@@ -36,6 +36,7 @@ func GetTags(c *gin.Context) {
 	})
 
 }
+
 //@Summary 新增标签
 //@Produce json
 //@Param name query string true "Name"
@@ -106,7 +107,7 @@ func EditTag(c *gin.Context) {
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
-	}else{
+	} else {
 		for _, err := range valid.Errors {
 			logging.Info(fmt.Sprintf("err.key:%s, err.message:%s", err.Key, err.Message))
 		}
@@ -120,21 +121,21 @@ func EditTag(c *gin.Context) {
 }
 
 func DeleteTag(c *gin.Context) {
-    id := com.StrTo(c.Param("id")).MustInt()
-    valid := validation.Validation{}
-    valid.Min(id, 0, "id").Message("ID必须大于0")
-    code := e.INVALID_PARAMS
-    if !valid.HasErrors() {
-    	code = e.SUCCESS
-    	if models.ExistTagByID(id) {
-    		models.DeleteTag(id)
-		}else{
+	id := com.StrTo(c.Param("id")).MustInt()
+	valid := validation.Validation{}
+	valid.Min(id, 0, "id").Message("ID必须大于0")
+	code := e.INVALID_PARAMS
+	if !valid.HasErrors() {
+		code = e.SUCCESS
+		if models.ExistTagByID(id) {
+			models.DeleteTag(id)
+		} else {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
 	}
-    c.JSON(http.StatusOK, gin.H{
-    	"code":code,
-    	"msg":e.GetMsg(code),
-    	"data":make(map[string]interface{}),
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": make(map[string]interface{}),
 	})
 }

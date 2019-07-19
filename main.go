@@ -2,6 +2,7 @@ package main
 
 import (
 	"caspar/gin-blog/models"
+	"caspar/gin-blog/pkg/gredis"
 	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/pkg/setting"
 	"caspar/gin-blog/routers"
@@ -19,6 +20,7 @@ func main() {
 	setting.Setup()
 	models.Setup()
 	logging.Setup()
+	gredis.Setup()
 	router := routers.InitRouter()
 
 	s := &http.Server{
@@ -28,7 +30,7 @@ func main() {
 		WriteTimeout:   setting.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
-	go func(){
+	go func() {
 		if err := s.ListenAndServe(); err != nil {
 			fmt.Println("Listen:%s\n", err)
 		}
@@ -39,7 +41,7 @@ func main() {
 	<-quit
 
 	log.Println("Shutdown server ...")
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	defer cancel()
 	if err := s.Shutdown(ctx); err != nil {
@@ -47,8 +49,6 @@ func main() {
 	}
 
 	log.Println("Server exiting")
-
-
 
 	/*endless.DefaultReadTimeOut = setting.ReadTimeout
 	endless.DefaultWriteTimeOut = setting.WriteTimeout
@@ -64,7 +64,5 @@ func main() {
 	if err != nil {
 		log.Printf("Server err:%v", err)
 	}*/
-
-
 
 }

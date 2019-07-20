@@ -64,14 +64,15 @@ func AddArticle(data map[string]interface{}) error {
 	}).Error
 }
 
-func EditArticle(id int, data map[string]interface{}) bool {
-	db.Model(&Article{}).Where("id=?", id).Update(data)
-	return true
+func EditArticle(id int, data map[string]interface{}) error {
+	if err := db.Model(&Article{}).Where("id=?", id).Update(data).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func DeleteArticle(id int) bool {
-	db.Where("id=?", id).Delete(Article{})
-	return true
+func DeleteArticle(id int) error {
+	return db.Where("id=?", id).Delete(Article{}).Error
 }
 
 /*func (article *Article) BeforeCreate(scope *gorm.Scope) error {

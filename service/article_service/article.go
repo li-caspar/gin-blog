@@ -40,6 +40,33 @@ func (a *Article) Add() error {
 	return err
 }
 
+func (a *Article) Edit() error {
+	article := map[string]interface{}{
+		"tag_id":          a.TagId,
+		"title":           a.Title,
+		"desc":            a.Desc,
+		"content":         a.Content,
+		"cover_image_url": a.CoverImageUrl,
+		"modified_by":      a.CreateBy,
+		"state":           a.State,
+	}
+	err := models.EditArticle(a.ID, article)
+	if err != nil {
+		logging.Info(err)
+	}
+	return err
+}
+
+
+func (a *Article) Delete() error{
+	err := models.DeleteArticle(a.ID)
+	if err != nil {
+		logging.Info(err)
+	}
+	return err
+}
+
+
 func (a *Article) Get() (*models.Article, error) {
 	var cacheArticle *models.Article
 

@@ -2,10 +2,17 @@ package tag_service
 
 import (
 	"caspar/gin-blog/models"
+	"caspar/gin-blog/pkg/export"
+	mfile "caspar/gin-blog/pkg/file"
 	"caspar/gin-blog/pkg/gredis"
 	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/service/cache_service"
 	"encoding/json"
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/tealeg/xlsx"
+	"io"
+	"strconv"
+	"time"
 )
 
 type Tag struct {
@@ -109,5 +116,71 @@ func (t *Tag) Delete() error {
 		return err
 	}
 	return nil
+}
+
+func (t *Tag) Export() (string, error){
+	tags, err := t.GetAll()
+	if err != nil {
+		return "", err
+	}
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("标签信息")
+	if err != nil {
+		return "", err
+	}
+	titles := []string{"ID", "名称", "创建人", "创建时间", "修改人", "修改时间"}
+	row := sheet.AddRow()
+	var  cell *xlsx.Cell
+	for _, title := range titles {
+		cell = row.AddCell()
+		cell.Value = title
+	}
+
+	for _,v := range tags {
+		values := []string{
+			strconv.Itoa(v.ID),
+			v.Name,
+			v.CreatedBy,
+			strconv.Itoa(v.CreatedOn),
+			v.ModifiedBy,
+			strconv.Itoa(v.ModifiedOn),
+		}
+		row := sheet.AddRow()
+		for _,value := range values{
+			cell = row.AddCell()
+			cell.Value = value
+		}
+	}
+	ts := strconv.Itoa(int(time.Now().Unix()))
+	filename := "tags-"+ts+".xlsx"
+
+	fullPath := export.GetExcelFullPath() + filename
+	err = mfile.IsNotExisMkDir(export.GetExcelFullPath())
+	err = file.Save(fullPath)
+	if err != nil {
+		return "", nil
+	}
+
+	return filename, nil
+}
+
+func (t *Tag) Import(r io.Reader) error {
+	xlsx, err := excelize.OpenReader(r)
+	if err != nil {
+		return err
+	}
+	rows,_ := xlsx.GetRows("标签信息")
+	for index, row := range rows {
+		if index >0 {
+			var data []string
+			for _, cell := range row{
+               data = append(data, cell)
+			}
+			models.AddTag(data[0], 1, data[1])
+		}
+
+	}
+	return nil
+
 }
 

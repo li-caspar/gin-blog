@@ -3,6 +3,8 @@ package v1
 import (
 	"caspar/gin-blog/pkg/app"
 	"caspar/gin-blog/pkg/e"
+	"caspar/gin-blog/pkg/export"
+	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/pkg/setting"
 	"caspar/gin-blog/pkg/util"
 	"caspar/gin-blog/service/tag_service"
@@ -85,7 +87,6 @@ func AddTags(c *gin.Context) {
 		return
 	}
 
-
 	err = tagService.Add()
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_TAG_FAIL, nil)
@@ -137,7 +138,6 @@ func EditTag(c *gin.Context) {
 		return
 	}
 
-
 	if err = tagServcie.Edit(); err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_TAG_FAIL, nil)
 		return
@@ -176,4 +176,46 @@ func DeleteTag(c *gin.Context) {
 		return
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
+}
+
+func ExportTag(c *gin.Context) {
+	appG := app.Gin{C: c}
+	name := c.PostForm("name")
+	state := -1
+	if arg := c.PostForm("state"); arg != "" {
+		state = com.StrTo(arg).MustInt()
+	}
+	tagService := tag_service.Tag{
+		Name:  name,
+		State: state,
+
+	}
+	filename, err := tagService.Export()
+	if err != nil {
+		appG.Response(http.StatusOK, e.ERROR_EXPORT_TAG_FAIL, nil)
+		return
+	}
+	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
+		"export_url":export.GetExcelFullUrl(filename),
+		"export_save_url":export.GetExcelPath() + filename,
+	})
+}
+
+func ImportTag(c *gin.Context){
+	appG := app.Gin{C:c}
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ERROR, nil)
+		return
+	}
+	tagService := tag_service.Tag{}
+	err = tagService.Import(file)
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ERROR_IMPORT_TAG_FAIL, nil)
+		return
+	}
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
+
 }

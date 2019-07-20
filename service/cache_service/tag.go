@@ -7,7 +7,7 @@ import (
 )
 
 type Tag struct {
-	ID       string
+	ID       int
 	Name     string
 	State    int
 	PageNum  int
@@ -15,10 +15,10 @@ type Tag struct {
 }
 
 func (t *Tag) GetTagKey() string {
-	return e.CACHE_TAG + "_" + t.ID
+	return e.CACHE_TAG + "_" + strconv.Itoa(t.ID)
 }
 
-func (t *Tag) CetTagsKey() string {
+func (t *Tag) GetTagsKey() string {
 	keys := []string{
 		e.CACHE_TAG,
 		"LIST",

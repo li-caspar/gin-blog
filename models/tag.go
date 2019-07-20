@@ -18,49 +18,62 @@ func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
 	return nil
 }*/
 
-func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
-	return
-}
 
-func GetTagTotal(maps interface{}) (count int) {
-	db.Model(&Tag{}).Where(maps).Count(&count)
-	return
-}
 
-func ExitTagByName(name string) bool {
-	var tag Tag
-	db.Select("id").Where("name=?", name).First(&tag)
-	if tag.ID > 0 {
-		return true
+func GetTags(pageNum int, pageSize int, maps interface{}) ([]*Tag, error) {
+	var tags []*Tag
+	err := db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags).Error
+	if err != nil {
+		return nil, err
 	}
-	return false
+	return tags, nil
 }
 
-func AddTag(name string, state int, createdBy string) bool {
-	db.Create(&Tag{
+func GetTagTotal(maps interface{}) (int, error) {
+	var count int
+	err := db.Model(&Tag{}).Where(maps).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func ExistTagByName(name string) (bool, error) {
+	var tag Tag
+	err := db.Select("id").Where("name=?", name).First(&tag).Error
+	if err != nil {
+		return false, err
+	}
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func AddTag(name string, state int, createdBy string) error {
+	return db.Create(&Tag{
 		Name:      name,
 		State:     state,
 		CreatedBy: createdBy,
-	})
-	return true
+	}).Error
+
 }
 
-func ExistTagByID(id int) bool {
+func ExistTagByID(id int) (bool,error) {
 	var tag Tag
-	db.Select("id").Where("id=?", id).First(&tag)
-	if tag.ID > 0 {
-		return true
+	if err := db.Select("id").Where("id=?", id).First(&tag).Error; err != nil {
+		return false,err
 	}
-	return false
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
-func DeleteTag(id int) bool {
-	db.Where("id=?", id).Delete(&Tag{})
-	return true
+func DeleteTag(id int) error {
+	return db.Where("id=?", id).Delete(&Tag{}).Error
 }
 
-func EditTag(id int, data interface{}) bool {
-	db.Model(&Tag{}).Where("id=?", id).Update(data)
-	return true
+func EditTag(id int, data interface{}) error {
+	return db.Model(&Tag{}).Where("id=?", id).Update(data).Error
 }

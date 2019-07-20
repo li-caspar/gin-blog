@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"caspar/gin-blog/models"
 	"caspar/gin-blog/pkg/app"
 	"caspar/gin-blog/pkg/e"
 	"caspar/gin-blog/pkg/setting"
@@ -176,11 +175,9 @@ func EditArticle(c *gin.Context) {
 	}
 
 
-	if models.ExistTagByID(tagId) {
-		if err = articleService.Edit(); err != nil {
-			appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_ARTICLE_FAIL, nil)
-			return
-		}
+	if err = articleService.Edit(); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_ARTICLE_FAIL, nil)
+		return
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
 

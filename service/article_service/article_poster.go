@@ -2,6 +2,7 @@ package article_service
 
 import (
 	"caspar/gin-blog/pkg/file"
+	"caspar/gin-blog/pkg/logging"
 	"caspar/gin-blog/pkg/qrcode"
 	"image"
 	"image/draw"
@@ -28,7 +29,7 @@ func GetPosterFlag() string {
 }
 
 func (a *ArticlePoster) checkMergeImage(path string) bool {
-	if file.CheckExist(path) == true {
+	if file.CheckExist(path + a.PosterName) == true {
 		return false
 	}
 	return true
@@ -80,27 +81,32 @@ func (a *ArticlePosterBg) Generate() (string, string, error) {
 	if !a.checkMergeImage(path) {//检查合并后图像（指的是存放合并后的海报）是否存在
 		mergedF, err := a.OpenMergedImage(path) //生成待合并的图像 mergedF
 		if err != nil {
+			logging.Warn(err)
 			return "", "", err
 		}
 		defer mergedF.Close()
 		bgF, err := file.MustOpen(a.Name, path) //打开事先存放的背景图 bgF
 		if err != nil {
+			logging.Warn(err)
 			return "", "", err
 		}
 		defer bgF.Close()
 
 		qrF, err := file.MustOpen(fileNmae, path) //打开生成的二维码图像 qrF
 		if err != nil {
+			logging.Warn(err)
 			return "", "", err
 		}
 		defer qrF.Close()
 
 		bgImage, err := jpeg.Decode(bgF)//解码 bgF 和 qrF 返回 image.Image
 		if err != nil {
+			logging.Warn(err)
 			return "", "", err
 		}
 		qrImage, err := jpeg.Decode(qrF)
 		if err != nil {
+			logging.Warn(err)
 			return "", "", err
 		}
 		jpg := image.NewRGBA(image.Rect(a.Rect.X0, a.Rect.Y0, a.Rect.X1, a.Rect.Y1))//创建一个新的 RGBA 图像
